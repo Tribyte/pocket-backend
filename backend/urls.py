@@ -4,6 +4,8 @@ from rest_framework.authtoken import views as auth_views
 from django.urls import path, include
 from api.router import router
 from api.viewsets import UserAPIView, RegisterAPIView, LoginAPIView 
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from . import views
 
 
@@ -17,3 +19,7 @@ urlpatterns = [
     path('api/auth/login', LoginAPIView.as_view()),
     url(r'^api/', include(router.urls)),
 ]
+
+if settings.DEBUG:
+    urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
