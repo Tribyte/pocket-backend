@@ -20,13 +20,15 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 # See https://docs.djangoproject.com/en/3.0/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = os.environ['SECRET_KEY']
+with open('/etc/secrets/dev_key.txt') as f:
+        SECRET_KEY = f.read().strip()
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = False 
 
 ALLOWED_HOSTS = [
     'dev.pocketcampaigns.org',
+    'dev.app.pocketcampaigns.org',
     '67.205.154.231'
 ]
 
@@ -104,12 +106,21 @@ REST_FRAMEWORK = {
 # Database
 # https://docs.djangoproject.com/en/3.0/ref/settings/#databases
 
+with open('/etc/secrets/dev_pg_name.txt') as f:
+    NAME = f.read().strip()
+with open('/etc/secrets/dev_pg_user.txt') as f:
+    USER = f.read().strip()
+with open('/etc/secrets/dev_pg_password.txt') as f:
+    PASSWORD = f.read().strip()
+
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'OPTIONS': {
-            'read_default_file': '/etc/postgresql/dev_pocket.cnf',
-        },
+        'NAME': NAME,
+        'USER': USER,
+        'PASSWORD': PASSWORD,
+        'HOST': 'localhost',
+        'PORT': '',
     }
 }
 
@@ -162,11 +173,17 @@ LOGIN_REDIRECT_URL = 'home'
 
 DATA_UPLOAD_MAX_NUMBER_FIELDS = None
 
-STATIC_URL = '/static/'
+STATIC_URL = '/dstatic/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media/')
+
+STATICFILES_FINDERS = (
+    'django.contrib.staticfiles.finders.FileSystemFinder',
+    'django.contrib.staticfiles.finders.AppDirectoriesFinder',
+    'compressor.finders.CompressorFinder',
+)
 
 CORS_ORIGIN_WHITELIST = [
     'https://dev.pocketcampaigns.org'
